@@ -5220,8 +5220,8 @@ def course(request):
 
     if request.method == "POST":
         data = request.data
-
-        h = Question.objects.filter(system__system__in=request.data["system"], topic__topicAttribute__in=request.data["topics"])
+        print(data)
+        h = Question.objects.filter(topic__topicAttribute__in=request.data["topics"])
         serializer = QuestionSerializer(h, many=True)
 
         for x in data:
