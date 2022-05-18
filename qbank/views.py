@@ -2,10 +2,11 @@ from django.http import HttpResponse
 
 from qbank.serializers import CourseSerializer, QuestionSerializer, UserSerializer, UserSerializerWithToken
 from .models import *
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import permissions, status
+from rest_framework.permissions import AllowAny
 
 # Create your views here.
 def index(request):
@@ -5211,9 +5212,9 @@ def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
 
 @api_view(["GET", "POST"])
+@permission_classes([AllowAny])
 def course(request):
-    q = Question.objects.filter(section=Section.objects.get(id=1))
-    
+
     if request.method == "GET":
         courses = Course.objects.all().distinct()
         serializer = CourseSerializer(courses, many=True)
@@ -5222,17 +5223,16 @@ def course(request):
 
     if request.method == "POST":
         data = request.data
-        print(data)
+        print(request.data["topics"])
         h = Question.objects.filter(topic__topicAttribute__in=request.data["topics"])
         serializer = QuestionSerializer(h, many=True)
 
-        for x in data:
-            print(x)
         return Response(serializer.data)
 
 @api_view(["GET"])
+@permission_classes([AllowAny])
 def questions_list(request):
-    
+
     if request.method == "GET":
         questions = Question.objects.all()
         serializer = QuestionSerializer(questions, many=True)
