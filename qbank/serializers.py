@@ -71,12 +71,11 @@ class CourseSerializer(serializers.ModelSerializer):
                   "sections", "created_at", "updated_at"]
         depth = 4
 
-
 class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = '__all__'
+        exclude = ["password"]
 
 class UserSerializerWithToken(serializers.ModelSerializer):
 
@@ -104,4 +103,11 @@ class UserSerializerWithToken(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = '__all__'
+        exclude = ["password"]
+
+class UserCourseSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserCourse
+        exclude = ["user"]
+        depth = 1

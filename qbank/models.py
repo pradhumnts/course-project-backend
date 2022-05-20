@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Topic(models.Model):
     topic = models.CharField(max_length=100)
@@ -49,7 +50,6 @@ class Course(models.Model):
     def __str__(self):
         return self.courseName
 
-
 class Answer(models.Model):
     choice = models.CharField(max_length=255)
     answerHeader = models.CharField(max_length=200, blank=True, null=True)
@@ -79,3 +79,33 @@ class Question(models.Model):
 
     def __str__(self):
         return str(self.pk) + " - " + str(self.created_at) + " - " + str(self.updated_at)
+
+class UserCourse(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    price = models.IntegerField(null=True, blank=True)
+    subscriptionStartDate = models.DateTimeField(null=True, blank=True)
+    subscriptionEndDate = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.user.username + " - " + self.course.courseName
+
+class UserQuestion(models.Model):
+    QUESTION_STATUS_CHOICES = [
+        ('Incorrect', 'Incorrect'),
+        ('Used', 'Used'),
+        ('Correct', 'Correct'),
+        ('Marked', 'Marked'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    status = models.CharField(max_length=40, choices=QUESTION_STATUS_CHOICES, default="Used")
+    attemptTime = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.user.username + ' ' + str(self.question.id)

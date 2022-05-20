@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 
-from qbank.serializers import CourseSerializer, QuestionSerializer, UserSerializer, UserSerializerWithToken
+from qbank.serializers import CourseSerializer, QuestionSerializer, UserCourseSerializer, UserSerializer, UserSerializerWithToken
 from .models import *
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -5222,8 +5222,7 @@ def course(request):
         return Response(serializer.data)
 
     if request.method == "POST":
-        data = request.data
-        print(request.data["topics"])
+        
         h = Question.objects.filter(topic__topicAttribute__in=request.data["topics"])
         serializer = QuestionSerializer(h, many=True)
 
@@ -5244,6 +5243,13 @@ def current_user(request):
     serializer = UserSerializer(request.user)
     return Response(serializer.data)
 
+@api_view(['GET'])
+def user_courses(request):
+    print(request.user)
+    data = UserCourse.objects.filter(user=request.user)
+    serializer = UserCourseSerializer(data, many=True)
+    return Response(serializer.data)
+    
 class UserList(APIView):
     """
     Create a new user. It's called 'UserList' because normally we'd have a get
